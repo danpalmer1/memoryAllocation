@@ -3,7 +3,7 @@ public class Partition {
 	private int base;         // base address
 	private int length;       // partition size
 	private boolean bFree;    // status: free or allocated
-	private String process;   // assigned process if allocated
+	private Process process;   // assigned process if allocated
 
 	// constructor method
 	public Partition(int base, int length) {
@@ -38,11 +38,11 @@ public class Partition {
 		this.bFree = bFree;
 	}
 
-	public String getProcess() {
+	public Process getProcess() {
 		return process;
 	}
 
-	public void setProcess(String process) {
+	public void setProcess(Process process) {
 		this.process = process;
 	}
 	
