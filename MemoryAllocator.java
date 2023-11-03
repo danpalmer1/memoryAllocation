@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,39 +7,51 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class MemoryAllocator {
 	private int size;    // maximum memory size in bytes (B)
 	private Map<String, Partition> allocMap;   // map process to partition
 	private List<Partition> partList;    // list of memory partitions
     private static Map<String, Integer> configMap = new HashMap<>();
+	private List<Process> procList = new ArrayList<Process>();
+
 	// constructor
-	public MemoryAllocator(int size) {
-		this.size = size;
+	public MemoryAllocator() {
+		loadConfig(); //load config info into configMap
+		size = configMap.get("MEMORY_MAX");
 		this.allocMap = new HashMap<>();
 		this.partList = new ArrayList<>();
 		this.partList.add(new Partition(0, size)); //add the first hole, which is the whole memory at start up
+		//create NUM_PROC processes
+		for(int i = 0; i < configMap.get("NUM_PROC"); i++) {
+			Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"));
+			procList.add(proc);
+		}
 	}
       
-	private static Map loadConfig() {
-
-        try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
+	private static Map<String, Integer> loadConfig() {
+		//put default values
+		configMap.put("MEMORY_MAX", 1024);
+		configMap.put("PROC_SIZE_MAX", 256);
+		configMap.put("NUM_PROC", 10);
+		configMap.put("MAX_PROC_TIME", 10000);
+		try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // Split the line into key and value
                 String[] parts = line.split(" = ");
-
                 if (parts.length == 2) {
-                    String key = parts[0];
+                    String key = parts[0].replaceAll("[<>]", "");
                     // Parse the value as an integer (assuming the values are integers)
                     int value = Integer.parseInt(parts[1].replaceAll("[<>]", ""));
                     configMap.put(key, value);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        } catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
         return configMap;
     }
 
@@ -58,7 +69,6 @@ public class MemoryAllocator {
       
 	// get the size of total allocated memory
 	private int allocated_memory() {
-		//TODO: add code below
 		int size = 0;
 		for(Partition part : partList)
 			if(!part.isbFree()) size += part.getLength();
@@ -67,7 +77,6 @@ public class MemoryAllocator {
       
 	// get the size of total free memory
 	private int free_memory() {
-		//TODO: add code below
 		int size = 0;
 		for(Partition part : partList)
 			if(part.isbFree()) size += part.getLength();
@@ -76,14 +85,12 @@ public class MemoryAllocator {
       
 	// sort the list of partitions in ascending order of base addresses
 	private void order_partitions() {
-		//TODO: add code below
 		Collections.sort(partList, (o1,o2) -> (o1.getBase() - o2.getBase()));
 	}
 
 	// implements the first fit memory allocation algorithm
-	public int first_fit(String process, int size) {
-	//TODO: add code below
-		if(allocMap.containsKey(process))
+	public int first_fit(Process proc, int size) {
+		if(allocMap.containsKey(proc.getId()))
 			return -1; //illegal request as process has been allocated a partition already
 		int index = 0, alloc = -1;
 		while(index < partList.size()) {
@@ -91,14 +98,15 @@ public class MemoryAllocator {
 			if(part.isbFree() && part.getLength() >= size) {	//found a satisfied free partition
 				Partition allocPart = new Partition(part.getBase(), size);
 				allocPart.setbFree(false);
-				allocPart.setProcess(process);
+				allocPart.setProcess(proc);
 				partList.add(index, allocPart); //insert this allocated partition at index
-				allocMap.put(process, allocPart);
+				allocMap.put(proc.getId(), allocPart);
 				part.setBase(part.getBase() + size);
 				part.setLength(part.getLength() - size);
 				if(part.getLength() == 0) //if the new free memory partition has 0 size -> remove it
 					partList.remove(part);
 				alloc = size;
+				procList.remove(proc);
 				break;
 			}
 			index++; //try next partition
@@ -107,9 +115,8 @@ public class MemoryAllocator {
 	}
   
 	// release the allocated memory of a process
-	public int release(String process) {
-	//TODO: add code below
-		if(!allocMap.containsKey(process))
+	public int release(Process process) {
+		if(!allocMap.containsKey(process.getId()))
 			return -1; //no such partition allocated to process
 		int size = -1;
 		for(Partition part : partList) {
@@ -149,9 +156,22 @@ public class MemoryAllocator {
 			i++; //try next partition to merge all available free partitions
 		}
 	}
-	public static void main(String[] args) {
-            System.out.println(loadConfig());
-		}	
-		
 	
+	//public method to access configMap
+	public Map<String, Integer> getConfigMap() {
+		return configMap;
+	}
+
+	public static void main(String[] args) {
+		MemoryAllocator mem = new MemoryAllocator();
+		while(!mem.partList.isEmpty()) { //while processes to be allocated
+			for(int i = 0; i < mem.procList.size(); i++) {
+				if(mem.first_fit(mem.procList.get(i), mem.procList.get(i).getSize()) > 0) {
+					System.out.println("Successfully allocated " + mem.procList.get(i).getSize() + " KB to " + mem.procList.get(i).getId());
+				} else {
+					System.err.println("Could not allocate");
+				}
+			} 
+		}
+	}
 }
