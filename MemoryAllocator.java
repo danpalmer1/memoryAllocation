@@ -7,13 +7,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class MemoryAllocator {
 	private int size;    // maximum memory size in bytes (B)
 	private Map<String, Partition> allocMap;   // map process to partition
-	private List<Partition> partList;    // list of memory partitions
+	List<Partition> partList;    // list of memory partitions
     private static Map<String, Integer> configMap = new HashMap<>();
-	private List<Process> procList = new ArrayList<Process>();
+	List<Process> procList = new ArrayList<Process>();
 
 	// constructor
 	public MemoryAllocator() {
@@ -113,6 +114,12 @@ public class MemoryAllocator {
 		}
 		return alloc;
 	}
+
+	// implements the first fit memory allocation algorithm
+	// public int best_fit(Process proc, int size) {
+		
+	// 	return alloc;
+	// }
   
 	// release the allocated memory of a process
 	public int release(Process process) {
@@ -160,18 +167,5 @@ public class MemoryAllocator {
 	//public method to access configMap
 	public Map<String, Integer> getConfigMap() {
 		return configMap;
-	}
-
-	public static void main(String[] args) {
-		MemoryAllocator mem = new MemoryAllocator();
-		while(!mem.partList.isEmpty()) { //while processes to be allocated
-			for(int i = 0; i < mem.procList.size(); i++) {
-				if(mem.first_fit(mem.procList.get(i), mem.procList.get(i).getSize()) > 0) {
-					System.out.println("Successfully allocated " + mem.procList.get(i).getSize() + " KB to " + mem.procList.get(i).getId());
-				} else {
-					System.err.println("Could not allocate");
-				}
-			} 
-		}
 	}
 }
