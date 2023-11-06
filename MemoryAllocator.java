@@ -107,7 +107,8 @@ public class MemoryAllocator {
 				if(part.getLength() == 0) //if the new free memory partition has 0 size -> remove it
 					partList.remove(part);
 				alloc = size;
-				procList.remove(proc);
+				//procList.remove(proc);
+				proc.setIsFinished(true);
 				break;
 			}
 			index++; //try next partition
