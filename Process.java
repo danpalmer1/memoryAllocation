@@ -4,13 +4,13 @@ public class Process {
     
     private int size; //in KB
     private int time; //in ms
-    private String id;
+    private int id;
     private boolean isFinished;
 
-    public Process(int maxSize, int maxTime) {
+    public Process(int maxSize, int maxTime, int id) {
         this.size = (int)(Math.random() * maxSize);
         this.time = (int)(Math.random() * maxTime);
-        this.id = UUID.randomUUID().toString();
+        this.id = id;
         this.isFinished = false;
     }
     

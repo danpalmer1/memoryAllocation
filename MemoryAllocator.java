@@ -7,11 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class MemoryAllocator {
 	private int size;    // maximum memory size in bytes (B)
-	private Map<String, Partition> allocMap;   // map process to partition
+	Map<Process, Partition> allocMap;   // map process to partition
 	List<Partition> partList;    // list of memory partitions
     private static Map<String, Integer> configMap = new HashMap<>();
 	List<Process> procList = new ArrayList<Process>();
@@ -25,7 +24,7 @@ public class MemoryAllocator {
 		this.partList.add(new Partition(0, size)); //add the first hole, which is the whole memory at start up
 		//create NUM_PROC processes
 		for(int i = 0; i < configMap.get("NUM_PROC"); i++) {
-			Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"));
+			Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"), i);
 			procList.add(proc);
 		}
 	}
@@ -64,7 +63,7 @@ public class MemoryAllocator {
 		for(Partition part : partList) {
 			System.out.printf("Address [%d:%d] %s (%d KB)\n", 
 					part.getBase(), part.getBase()+ part.getLength()-1,
-					part.isbFree() ? "Free" : part.getProcess(), part.getLength());
+					part.isbFree() ? "Free" : part.getProcess().getId(), part.getLength());
 		}
 	}
       
@@ -101,7 +100,7 @@ public class MemoryAllocator {
 				allocPart.setbFree(false);
 				allocPart.setProcess(proc);
 				partList.add(index, allocPart); //insert this allocated partition at index
-				allocMap.put(proc.getId(), allocPart);
+				allocMap.put(proc, allocPart);
 				part.setBase(part.getBase() + size);
 				part.setLength(part.getLength() - size);
 				if(part.getLength() == 0) //if the new free memory partition has 0 size -> remove it

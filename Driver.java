@@ -1,3 +1,5 @@
+import java.util.Map;
+
 public class Driver {
 
     public static void main(String[] args) {
@@ -7,15 +9,19 @@ public class Driver {
         // + implement best/worst-fit
         // + implement next-fit
     	MemoryAllocator mem = new MemoryAllocator();
-    	//	Scanner sc = new Scanner(System.in);
+    	//DAN TODO:
+		//+ implement system time
+		//+ subtract 1 from all allocated processes each system time
+		//+ check if there are processes that are finished (procTime == 0) and release them
 		boolean fin;
+		int sysTime = 0;
 		do {
 			System.out.println(mem.procList.size());
 				fin = true;
     			for(int i = 0; i < mem.procList.size(); i++) {
 					
     				if(mem.first_fit(mem.procList.get(i), mem.procList.get(i).getSize()) > 0) {
-    					System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+    					System.out.println("[" + sysTime + "] Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
     					mem.print_status();
     				} else {
     					System.err.println("Could not allocate");
@@ -23,8 +29,12 @@ public class Driver {
 					if(!mem.procList.get(i).isFinished()) 
 						fin = false;
 				}
-					
-		} while(!fin); //while processes to be allocated
+				for(Map.Entry<Process, Partition> ent : mem.allocMap.entrySet()) {
+					Process p = ent.getKey();
+					p.setTime(p.getTime()- 1);
+				}
+				sysTime++;		
+		} while(!fin /*Need to add && processes that are allocated still have sysTime left */); //while processes to be allocated
     			
     }
 }
