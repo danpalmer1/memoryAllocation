@@ -11,7 +11,9 @@ public class Driver {
     	MemoryAllocator mem = new MemoryAllocator();
     	//DAN TODO:
 		//+ implement system time
-		//+ subtract 1 from all allocated processes each system time
+		//+ subtract 1 from all allocated processes each system time 
+		//+ may run into issues with having process be the allocMap key
+		//+ make look run until every process has reached 0 time
 		//+ check if there are processes that are finished (procTime == 0) and release them
 		boolean fin;
 		int sysTime = 0;
