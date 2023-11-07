@@ -59,14 +59,15 @@ public class MemoryAllocator {
 	// prints the allocation map (free + allocated) in ascending order of base addresses
 	public void print_status() {
 		order_partitions();
-		System.out.printf("Partitions [Allocated=%d KB, Free=%d KB]\n", allocated_memory(), free_memory());
-		for(Partition part : partList) {
-			System.out.printf("Address [%d:%d] %s (%d KB)\n", 
-					part.getBase(), part.getBase()+ part.getLength()-1,
-					part.isbFree() ? "Free" : part.getProcess().getId(), part.getLength());
+		System.out.print("| ");
+		for(int i = 0; i < partList.size()-1; i++) {
+			System.out.print("P" + partList.get(i).getProcess().getId() + " [" +
+			partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
+			+ " KB) | ");
 		}
+		System.out.println("Free (" + free_memory() + " KB) |\n");
 	}
-      
+	
 	// get the size of total allocated memory
 	private int allocated_memory() {
 		int size = 0;
@@ -178,5 +179,23 @@ public class MemoryAllocator {
 	//public method to access configMap
 	public Map<String, Integer> getConfigMap() {
 		return configMap;
+	}
+
+	public void showResults() {
+		int num_holes = 0;
+		int sum_holes = 0;
+		
+		for(int i = 0; i < partList.size(); i++) {
+			if(partList.get(i).isbFree()) {
+				num_holes++;
+				sum_holes += partList.get(i).getLength();
+			}
+		}
+		double avg_size = sum_holes/num_holes;
+		double percent = (sum_holes/size) * 100;
+		System.out.print("| Free Holes (" + num_holes + ") | " + "Avg Size (" +
+		avg_size + " KB) | " + "Total Size (" + sum_holes + " KB)"
+		+ " | Percent (" + percent + "%)");
+		
 	}
 }

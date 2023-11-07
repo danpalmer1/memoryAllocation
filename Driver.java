@@ -33,6 +33,7 @@ public class Driver {
 				Process p = ent.getKey();
 				p.setTime(p.getTime()- 1);
 			}
+			mem.showResults();
 			sysTime++;		
 		} while(!alloc || !mem.isFinished()/*Need to add && processes that are allocated still have sysTime left */); //while processes to be allocated
     }
