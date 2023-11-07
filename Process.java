@@ -1,5 +1,3 @@
-import java.util.UUID;
-
 public class Process {
     
     private int size; //in KB

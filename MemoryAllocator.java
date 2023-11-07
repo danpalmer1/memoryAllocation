@@ -90,7 +90,7 @@ public class MemoryAllocator {
 
 	// implements the first fit memory allocation algorithm
 	public int first_fit(Process proc, int size) {
-		if(allocMap.containsKey(proc.getId()))
+		if(allocMap.containsKey(proc))
 			return -1; //illegal request as process has been allocated a partition already
 		int index = 0, alloc = -1;
 		while(index < partList.size()) {
@@ -123,7 +123,7 @@ public class MemoryAllocator {
   
 	// release the allocated memory of a process
 	public int release(Process process) {
-		if(!allocMap.containsKey(process.getId()))
+		if(!allocMap.containsKey(process))
 			return -1; //no such partition allocated to process
 		int size = -1;
 		for(Partition part : partList) {

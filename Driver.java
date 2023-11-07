@@ -16,7 +16,7 @@ public class Driver {
 		boolean fin;
 		int sysTime = 0;
 		do {
-			System.out.println(mem.procList.size());
+			System.out.println("Number of processes: " + mem.procList.size());
 				fin = true;
     			for(int i = 0; i < mem.procList.size(); i++) {
 					
