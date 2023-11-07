@@ -1,24 +1,22 @@
-import java.util.UUID;
-
 public class Process {
     
     private int size; //in KB
     private int time; //in ms
-    private String id;
-    private boolean isFinished;
+    private int id;
+    private boolean isAlloc;
 
-    public Process(int maxSize, int maxTime) {
+    public Process(int maxSize, int maxTime, int id) {
         this.size = (int)(Math.random() * maxSize);
         this.time = (int)(Math.random() * maxTime);
-        this.id = UUID.randomUUID().toString();
-        this.isFinished = false;
+        this.id = id;
+        this.isAlloc = false;
     }
     
-    public boolean isFinished() {
-    	return isFinished;
+    public boolean isAlloc() {
+    	return isAlloc;
     }
-    public void setIsFinished(boolean bool) {
-    	this.isFinished = bool;
+    public void setIsAlloc(boolean bool) {
+    	this.isAlloc = bool;
     }
     public int getSize() {
         return size;
@@ -36,11 +34,11 @@ public class Process {
         this.time = time;
     }
     
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 }

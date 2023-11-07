@@ -7,11 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 public class MemoryAllocator {
 	private int size;    // maximum memory size in bytes (B)
-	private Map<String, Partition> allocMap;   // map process to partition
+	Map<Process, Partition> allocMap;   // map process to partition
 	List<Partition> partList;    // list of memory partitions
     private static Map<String, Integer> configMap = new HashMap<>();
 	List<Process> procList = new ArrayList<Process>();
@@ -25,7 +24,7 @@ public class MemoryAllocator {
 		this.partList.add(new Partition(0, size)); //add the first hole, which is the whole memory at start up
 		//create NUM_PROC processes
 		for(int i = 0; i < configMap.get("NUM_PROC"); i++) {
-			Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"));
+			Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"), i);
 			procList.add(proc);
 		}
 	}
@@ -64,7 +63,7 @@ public class MemoryAllocator {
 		for(Partition part : partList) {
 			System.out.printf("Address [%d:%d] %s (%d KB)\n", 
 					part.getBase(), part.getBase()+ part.getLength()-1,
-					part.isbFree() ? "Free" : part.getProcess(), part.getLength());
+					part.isbFree() ? "Free" : part.getProcess().getId(), part.getLength());
 		}
 	}
       
@@ -91,7 +90,7 @@ public class MemoryAllocator {
 
 	// implements the first fit memory allocation algorithm
 	public int first_fit(Process proc, int size) {
-		if(allocMap.containsKey(proc.getId()))
+		if(allocMap.containsKey(proc))
 			return -1; //illegal request as process has been allocated a partition already
 		int index = 0, alloc = -1;
 		while(index < partList.size()) {
@@ -101,19 +100,30 @@ public class MemoryAllocator {
 				allocPart.setbFree(false);
 				allocPart.setProcess(proc);
 				partList.add(index, allocPart); //insert this allocated partition at index
-				allocMap.put(proc.getId(), allocPart);
+				allocMap.put(proc, allocPart);
 				part.setBase(part.getBase() + size);
 				part.setLength(part.getLength() - size);
 				if(part.getLength() == 0) //if the new free memory partition has 0 size -> remove it
 					partList.remove(part);
 				alloc = size;
 				//procList.remove(proc);
-				proc.setIsFinished(true);
+				proc.setIsAlloc(true);
 				break;
 			}
 			index++; //try next partition
 		}
 		return alloc;
+	}
+
+	//check that the currently allocated processes have time left
+	public boolean isFinished() {
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			if(p.getTime() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// implements the first fit memory allocation algorithm
@@ -124,7 +134,7 @@ public class MemoryAllocator {
   
 	// release the allocated memory of a process
 	public int release(Process process) {
-		if(!allocMap.containsKey(process.getId()))
+		if(!allocMap.containsKey(process))
 			return -1; //no such partition allocated to process
 		int size = -1;
 		for(Partition part : partList) {
