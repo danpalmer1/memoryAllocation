@@ -107,12 +107,23 @@ public class MemoryAllocator {
 					partList.remove(part);
 				alloc = size;
 				//procList.remove(proc);
-				proc.setIsFinished(true);
+				proc.setIsAlloc(true);
 				break;
 			}
 			index++; //try next partition
 		}
 		return alloc;
+	}
+
+	//check that the currently allocated processes have time left
+	public boolean isFinished() {
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			if(p.getTime() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// implements the first fit memory allocation algorithm

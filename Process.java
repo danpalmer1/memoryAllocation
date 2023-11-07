@@ -3,20 +3,20 @@ public class Process {
     private int size; //in KB
     private int time; //in ms
     private int id;
-    private boolean isFinished;
+    private boolean isAlloc;
 
     public Process(int maxSize, int maxTime, int id) {
         this.size = (int)(Math.random() * maxSize);
         this.time = (int)(Math.random() * maxTime);
         this.id = id;
-        this.isFinished = false;
+        this.isAlloc = false;
     }
     
-    public boolean isFinished() {
-    	return isFinished;
+    public boolean isAlloc() {
+    	return isAlloc;
     }
-    public void setIsFinished(boolean bool) {
-    	this.isFinished = bool;
+    public void setIsAlloc(boolean bool) {
+    	this.isAlloc = bool;
     }
     public int getSize() {
         return size;
