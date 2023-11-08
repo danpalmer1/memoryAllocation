@@ -21,20 +21,33 @@ public class Driver {
 			System.out.println("Number of processes: " + mem.procList.size());
 			alloc = true;
 			System.out.println("SysTime= " + sysTime);
+			
+			for(Process proc : mem.procList) {
+				if(!proc.isAlloc()){
+					alloc = false;
+				}
+			}
+			if(!alloc) {
     		for(int i = 0; i < mem.procList.size(); i++) {		
     			if(mem.first_fit(mem.procList.get(i), mem.procList.get(i).getSize()) > 0) {
     				System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
-    				mem.print_status();
     			} else System.err.println("Could not allocate");
-				if(!mem.procList.get(i).isAlloc()) 
-					alloc = false;
-			}
+    		}	
+    	}
+    		
 			for(Map.Entry<Process, Partition> ent : mem.allocMap.entrySet()) {
 				Process p = ent.getKey();
-				p.setTime(p.getTime()- 1);
+				if(p.getTime() == 0){
+					mem.release(p);
+					break;
+				} else {
+					p.setTime(p.getTime()- 1);
+				}
 			}
-			mem.showResults();
+//			mem.print_status();
+			mem.showResults(); //shows calculations
 			sysTime++;		
 		} while(!alloc || !mem.isFinished()/*Need to add && processes that are allocated still have sysTime left */); //while processes to be allocated
+		System.out.println("FINISHED");
     }
 }
