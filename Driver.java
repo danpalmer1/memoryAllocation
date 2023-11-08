@@ -12,12 +12,9 @@ public class Driver {
         // + implement best/worst-fit
         // + implement next-fit
     	MemoryAllocator mem = new MemoryAllocator();
-    	//DAN TODO:
-		//+ implement system time
-		//+ subtract 1 from all allocated processes each system time 
-		//+ may run into issues with having process be the allocMap key
-		//+ make look run until every process has reached 0 time
-		//+ check if there are processes that are finished (procTime == 0) and release them
+    	//TODO:
+		//+ make loop run until every process has reached 0 time
+		//+ currently issue is once all processes are allocated (alloc = true) and all processes are finished (mem.isFinished() = true), we get an infinite loop
 		boolean alloc = false; //init alloc to false because we need to allocate processes
 		int sysTime = 0;
 		while(!alloc || !mem.isFinished()) { //while processes to be allocated or processes are not finished 
