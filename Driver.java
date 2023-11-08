@@ -39,7 +39,6 @@ public class Driver {
 				Process p = ent.getKey();
 				if(p.getTime() == 0){
 					mem.release(p);
-					break;
 				} else {
 					p.setTime(p.getTime()- 1);
 				}
