@@ -74,7 +74,7 @@ public class MemoryAllocator {
 //		if(!isDone) {
 		for(int i = 0; i < allocMap.size(); i++) {
 			
-			System.out.print("P" + allocMap + " [" +
+			System.out.print("P" + allocMap.get(i) + " [" +
 			partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
 			+ " KB) | ");
 		
@@ -133,6 +133,7 @@ public class MemoryAllocator {
 
 	//check that the currently allocated processes have time left
 	public boolean isFinished() {
+		if(allocMap.size() < 2) return false;
 		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
 			Process p = ent.getKey();
 			if(p.getTime() > 0) {

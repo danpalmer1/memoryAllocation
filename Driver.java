@@ -15,15 +15,16 @@ public class Driver {
 		//+ may run into issues with having process be the allocMap key
 		//+ make look run until every process has reached 0 time
 		//+ check if there are processes that are finished (procTime == 0) and release them
-		boolean alloc;
+		boolean alloc = false; //init alloc to false because we need to allocate processes
 		int sysTime = 0;
-		do {
+		while(!alloc || !mem.isFinished()) { //while processes to be allocated or processes are not finished 
 			System.out.println(" | Number of processes: " + mem.procList.size());
 			alloc = true;
 			System.out.println("SysTime= " + sysTime);
 			for(Process proc : mem.procList) { //check if there are processes that need to be allocated in procList
-				if(!proc.isAlloc()){
-					alloc = false;
+				if(!proc.isAlloc()){ //if process hasn't been allocated
+					alloc = false; //set variable to false
+					break;
 				}
 			}
 			if(!alloc) { //if processes still need to be allocated
@@ -34,6 +35,7 @@ public class Driver {
 					} else System.err.println("Could not allocate");
 					if(p.getTime() == 0 && p.isAlloc()){
 						mem.release(p);
+						System.out.println("Process " + p.getId() + " finished and was released");
 						continue;
 					}
 				}	
@@ -42,10 +44,10 @@ public class Driver {
 				Process p = ent.getKey(); 
 				p.setTime(p.getTime()- 1);
 			}
-//			mem.print_status();
+			mem.print_status();
 			mem.showResults(); //shows calculations
 			sysTime++;		
-		} while(!alloc || !mem.isFinished()); //while processes to be allocated and processes are not finished
+		} 
 		System.out.println("\nFINISHED");
     }
 }
