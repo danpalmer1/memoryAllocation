@@ -72,10 +72,10 @@ public class MemoryAllocator {
 //			isDone = true;
 //		}
 //		if(!isDone) {
-		for(int i = 0; i < allocMap.size(); i++) {
-			
-			System.out.print("P" + allocMap + " [" +
-			partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			System.out.print("P" + p.getId() + " [" +
+			p.getTime() + "s] " + "(" + p.getSize()
 			+ " KB) | ");
 		
 		}
@@ -133,6 +133,7 @@ public class MemoryAllocator {
 
 	//check that the currently allocated processes have time left
 	public boolean isFinished() {
+		if(allocMap.size() < 2) return false;
 		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
 			Process p = ent.getKey();
 			if(p.getTime() > 0) {
@@ -198,11 +199,11 @@ public class MemoryAllocator {
 	}
 
 	public void showResults() {
-		int num_holes = 0;
-		int sum_holes = 0;
+		double num_holes = 0;
+		double sum_holes = 0;
 		
 		for(int i = 0; i < partList.size(); i++) {
-			if(partList.get(i).isbFree()) {
+			if(!partList.get(i).isbFree()) {
 				num_holes++;
 				sum_holes += partList.get(i).getLength();
 			}
