@@ -60,13 +60,28 @@ public class MemoryAllocator {
 	public void print_status() {
 		order_partitions();
 		System.out.print("| ");
-		for(int i = 0; i < partList.size()-1; i++) {
-			System.out.print("P" + partList.get(i).getProcess().getId() + " [" +
+		boolean isDone = false;
+		System.out.println("ALLOCMAP SIZE = " + allocMap.size());
+//		if(partList.size() == 2) {
+//			for(int i = 0; i < 2; i++) {
+//				System.out.print("P" + partList.get(i).getProcess().getId() + " [" +
+//				partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
+//				+ " KB) | ");
+//			}
+//			System.out.println("Free (" + free_memory() + " KB) |\n");
+//			isDone = true;
+//		}
+//		if(!isDone) {
+		for(int i = 0; i < allocMap.size(); i++) {
+			
+			System.out.print("P" + allocMap + " [" +
 			partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
 			+ " KB) | ");
+		
 		}
 		System.out.println("Free (" + free_memory() + " KB) |\n");
 	}
+	//}
 	
 	// get the size of total allocated memory
 	private int allocated_memory() {
@@ -121,10 +136,10 @@ public class MemoryAllocator {
 		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
 			Process p = ent.getKey();
 			if(p.getTime() > 0) {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 	// implements the first fit memory allocation algorithm
@@ -143,6 +158,7 @@ public class MemoryAllocator {
 				part.setbFree(true);
 				part.setProcess(null);
 				size = part.getLength();
+				allocMap.remove(process);
 				break;
 			}
 		}
