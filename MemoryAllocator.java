@@ -60,18 +60,7 @@ public class MemoryAllocator {
 	public void print_status() {
 		order_partitions();
 		System.out.print("| ");
-		boolean isDone = false;
-		System.out.println("ALLOCMAP SIZE = " + allocMap.size());
-//		if(partList.size() == 2) {
-//			for(int i = 0; i < 2; i++) {
-//				System.out.print("P" + partList.get(i).getProcess().getId() + " [" +
-//				partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
-//				+ " KB) | ");
-//			}
-//			System.out.println("Free (" + free_memory() + " KB) |\n");
-//			isDone = true;
-//		}
-//		if(!isDone) {
+
 		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
 			Process p = ent.getKey();
 			System.out.print("P" + p.getId() + " [" +
@@ -81,7 +70,6 @@ public class MemoryAllocator {
 		}
 		System.out.println("Free (" + free_memory() + " KB) |\n");
 	}
-	//}
 	
 	// get the size of total allocated memory
 	private int allocated_memory() {
@@ -133,7 +121,7 @@ public class MemoryAllocator {
 
 	//check that the currently allocated processes have time left
 	public boolean isFinished() {
-		if(allocMap.size() < 2) return false;
+		//if(allocMap.size() < 2) return false;
 		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
 			Process p = ent.getKey();
 			if(p.getTime() > 0) {
@@ -209,7 +197,8 @@ public class MemoryAllocator {
 			}
 		}
 		double avg_size = sum_holes/num_holes;
-		double percent = (sum_holes/size) * 100;
+		double percent = (num_holes/size) * 100;
+		
 		System.out.print("| Free Holes (" + num_holes + ") | " + "Avg Size (" +
 		avg_size + " KB) | " + "Total Size (" + sum_holes + " KB)"
 		+ " | Percent (" + percent + "%)");

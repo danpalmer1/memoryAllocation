@@ -39,6 +39,7 @@ public class Driver {
 			for(Process p : mem.allocMap.keySet()) {
 				if(p.getTime() == 0 && p.isAlloc()){
 						release.add(p);
+
 						continue;
 					}
 				p.setTime(p.getTime()- 1);
