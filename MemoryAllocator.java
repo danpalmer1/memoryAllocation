@@ -198,11 +198,11 @@ public class MemoryAllocator {
 	}
 
 	public void showResults() {
-		int num_holes = 0;
-		int sum_holes = 0;
+		double num_holes = 0;
+		double sum_holes = 0;
 		
 		for(int i = 0; i < partList.size(); i++) {
-			if(partList.get(i).isbFree()) {
+			if(!partList.get(i).isbFree()) {
 				num_holes++;
 				sum_holes += partList.get(i).getLength();
 			}

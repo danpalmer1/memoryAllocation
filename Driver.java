@@ -18,36 +18,34 @@ public class Driver {
 		boolean alloc;
 		int sysTime = 0;
 		do {
-			System.out.println("Number of processes: " + mem.procList.size());
+			System.out.println(" | Number of processes: " + mem.procList.size());
 			alloc = true;
 			System.out.println("SysTime= " + sysTime);
-			
-			for(Process proc : mem.procList) {
+			for(Process proc : mem.procList) { //check if there are processes that need to be allocated in procList
 				if(!proc.isAlloc()){
 					alloc = false;
 				}
 			}
-			if(!alloc) {
-    		for(int i = 0; i < mem.procList.size(); i++) {		
-    			if(mem.first_fit(mem.procList.get(i), mem.procList.get(i).getSize()) > 0) {
-    				System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
-    			} else System.err.println("Could not allocate");
+			if(!alloc) { //if processes still need to be allocated
+				for(int i = 0; i < mem.procList.size(); i++) { //go through each process
+					Process p = mem.procList.get(i);
+					if(mem.first_fit(p, mem.procList.get(i).getSize()) > 0) {
+						System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+					} else System.err.println("Could not allocate");
+					if(p.getTime() == 0 && p.isAlloc()){
+						mem.release(p);
+						continue;
+					}
+				}	
     		}	
-    	}
-    		
 			for(Map.Entry<Process, Partition> ent : mem.allocMap.entrySet()) {
-				Process p = ent.getKey();
-				if(p.getTime() == 0){
-					mem.release(p);
-					continue;
-				} 
-					p.setTime(p.getTime()- 1);
-				
+				Process p = ent.getKey(); 
+				p.setTime(p.getTime()- 1);
 			}
 //			mem.print_status();
 			mem.showResults(); //shows calculations
 			sysTime++;		
-		} while(!alloc || !mem.isFinished()/*Need to add && processes that are allocated still have sysTime left */); //while processes to be allocated
-		System.out.println("FINISHED");
+		} while(!alloc || !mem.isFinished()); //while processes to be allocated and processes are not finished
+		System.out.println("\nFINISHED");
     }
 }
