@@ -1,4 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Driver {
 
@@ -33,20 +36,23 @@ public class Driver {
 					if(mem.first_fit(p, mem.procList.get(i).getSize()) > 0) {
 						System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
 					} else System.err.println("Could not allocate");
-					if(p.getTime() == 0 && p.isAlloc()){
-						mem.release(p);
-						System.out.println("Process " + p.getId() + " finished and was released");
+				}	
+    		}
+			List<Process> release = new ArrayList<Process>();
+			for(Process p : mem.allocMap.keySet()) {
+				if(p.getTime() == 0 && p.isAlloc()){
+						release.add(p);
 						continue;
 					}
-				}	
-    		}	
-			for(Map.Entry<Process, Partition> ent : mem.allocMap.entrySet()) {
-				Process p = ent.getKey(); 
 				p.setTime(p.getTime()- 1);
+			}
+			for(Process p : release) {
+				mem.release(p);
+				System.out.println("Process " + p.getId() + " finished and was released");
 			}
 			mem.print_status();
 			mem.showResults(); //shows calculations
-			sysTime++;		
+			sysTime++;
 		} 
 		System.out.println("\nFINISHED");
     }

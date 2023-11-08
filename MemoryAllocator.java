@@ -72,10 +72,10 @@ public class MemoryAllocator {
 //			isDone = true;
 //		}
 //		if(!isDone) {
-		for(int i = 0; i < allocMap.size(); i++) {
-			
-			System.out.print("P" + allocMap.get(i) + " [" +
-			partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			System.out.print("P" + p.getId() + " [" +
+			p.getTime() + "s] " + "(" + p.getSize()
 			+ " KB) | ");
 		
 		}
