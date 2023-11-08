@@ -158,7 +158,7 @@ public class MemoryAllocator {
 				part.setbFree(true);
 				part.setProcess(null);
 				size = part.getLength();
-			//	allocMap.remove(process);
+				allocMap.remove(process);
 				break;
 			}
 		}

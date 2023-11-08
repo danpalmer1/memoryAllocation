@@ -39,9 +39,10 @@ public class Driver {
 				Process p = ent.getKey();
 				if(p.getTime() == 0){
 					mem.release(p);
-				} else {
+					continue;
+				} 
 					p.setTime(p.getTime()- 1);
-				}
+				
 			}
 //			mem.print_status();
 			mem.showResults(); //shows calculations
