@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,35 +55,7 @@ public class MemoryAllocator {
 		}
         return configMap;
     }
-
-      
-	// prints the allocation map (free + allocated) in ascending order of base addresses
-	public void print_status() {
-		order_partitions();
-		System.out.print("| ");
-		boolean isDone = false;
-		System.out.println("ALLOCMAP SIZE = " + allocMap.size());
-//		if(partList.size() == 2) {
-//			for(int i = 0; i < 2; i++) {
-//				System.out.print("P" + partList.get(i).getProcess().getId() + " [" +
-//				partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
-//				+ " KB) | ");
-//			}
-//			System.out.println("Free (" + free_memory() + " KB) |\n");
-//			isDone = true;
-//		}
-//		if(!isDone) {
-		for(int i = 0; i < allocMap.size(); i++) {
-			
-			System.out.print("P" + allocMap + " [" +
-			partList.get(i).getProcess().getTime() + "s] " + "(" + partList.get(i).getProcess().getSize()
-			+ " KB) | ");
 		
-		}
-		System.out.println("Free (" + free_memory() + " KB) |\n");
-	}
-	//}
-	
 	// get the size of total allocated memory
 	private int allocated_memory() {
 		int size = 0;
@@ -133,6 +106,7 @@ public class MemoryAllocator {
 
 	//check that the currently allocated processes have time left
 	public boolean isFinished() {
+		//if(allocMap.size() < 2) return false;
 		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
 			Process p = ent.getKey();
 			if(p.getTime() > 0) {
@@ -140,14 +114,7 @@ public class MemoryAllocator {
 			}
 		}
 		return true;
-	}
-
-	// implements the first fit memory allocation algorithm
-	// public int best_fit(Process proc, int size) {
-		
-	// 	return alloc;
-	// }
-  
+	}  
 	// release the allocated memory of a process
 	public int release(Process process) {
 		if(!allocMap.containsKey(process))
@@ -198,20 +165,35 @@ public class MemoryAllocator {
 	}
 
 	public void showResults() {
-		int num_holes = 0;
-		int sum_holes = 0;
+		double num_holes = 0;
+		double sum_holes = 0;
+		order_partitions();
+		System.out.print("| ");
+
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			System.out.print("P" + p.getId() + " [" +
+			p.getTime() + "s] " + "(" + p.getSize()
+			+ " KB) | ");
+		
+		}
+		System.out.println("Free (" + free_memory() + " KB) |");
+
 		
 		for(int i = 0; i < partList.size(); i++) {
-			if(partList.get(i).isbFree()) {
+			if(!partList.get(i).isbFree()) {
 				num_holes++;
 				sum_holes += partList.get(i).getLength();
 			}
 		}
+
+		DecimalFormat df = new DecimalFormat("#.####");
 		double avg_size = sum_holes/num_holes;
-		double percent = (sum_holes/size) * 100;
+		double percent = (num_holes/size) * 100;
+		
 		System.out.print("| Free Holes (" + num_holes + ") | " + "Avg Size (" +
 		avg_size + " KB) | " + "Total Size (" + sum_holes + " KB)"
-		+ " | Percent (" + percent + "%)");
+		+ " | Percent (" + df.format(percent) + "%) |");
 		
 	}
 }

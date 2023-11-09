@@ -1,53 +1,52 @@
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Driver {
 
     public static void main(String[] args) {
         //TODO:
-        // + make sure current functionality works for new additions to make future implementation easier
-        // + implement memory management functions to support alloc algorithms
-        // + implement best/worst-fit
-        // + implement next-fit
+        // 	+ implement memory management functions to support alloc algorithms
+        // 	+ implement best/worst-fit
+        // 	+ implement next-fit
+		//	+ make loop run until every process has reached 0 time
+		//	+ currently issue is once all processes are allocated (alloc = true) and all processes are finished (mem.isFinished() = true), we get an infinite loop
     	MemoryAllocator mem = new MemoryAllocator();
-    	//DAN TODO:
-		//+ implement system time
-		//+ subtract 1 from all allocated processes each system time 
-		//+ may run into issues with having process be the allocMap key
-		//+ make look run until every process has reached 0 time
-		//+ check if there are processes that are finished (procTime == 0) and release them
-		boolean alloc;
+		boolean alloc = false; //init alloc to false because we need to allocate processes
 		int sysTime = 0;
-		do {
-			System.out.println("Number of processes: " + mem.procList.size());
+		while(!alloc || !mem.isFinished()) { //while processes to be allocated or processes are not finished 
 			alloc = true;
-			System.out.println("SysTime= " + sysTime);
-			
-			for(Process proc : mem.procList) {
-				if(!proc.isAlloc()){
-					alloc = false;
+			System.out.println();
+			System.out.println("\n| SystemTime = " + sysTime + " |");
+			for(Process proc : mem.procList) { //check if there are processes that need to be allocated in procList
+				if(!proc.isAlloc()){ //if process hasn't been allocated
+					alloc = false; //set variable to false
+					break;
 				}
 			}
-			if(!alloc) {
-    		for(int i = 0; i < mem.procList.size(); i++) {		
-    			if(mem.first_fit(mem.procList.get(i), mem.procList.get(i).getSize()) > 0) {
-    				System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
-    			} else System.err.println("Could not allocate");
-    		}	
-    	}
-    		
-			for(Map.Entry<Process, Partition> ent : mem.allocMap.entrySet()) {
-				Process p = ent.getKey();
-				if(p.getTime() == 0){
-					mem.release(p);
-					continue;
-				} 
+			if(!alloc) { //if processes still need to be allocated
+				for(int i = 0; i < mem.procList.size(); i++) { //go through each process
+					Process p = mem.procList.get(i);
+					if(mem.first_fit(p, mem.procList.get(i).getSize()) > 0) {
+						System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+					} else System.err.println("Could not allocate");
+				}	
+    		}
+			List<Process> release = new ArrayList<Process>();
+			for(Process p : mem.allocMap.keySet()) {
+				if(p.getTime() == 0 && p.isAlloc()){
+						release.add(p);
+
+						continue;
+					}
 				p.setTime(p.getTime()- 1);
 			}
-			
-//			mem.print_status();
-			mem.showResults(); //shows calculations
-			sysTime++;		
-		} while(!alloc || !mem.isFinished()/*Need to add && processes that are allocated still have sysTime left */); //while processes to be allocated
-		System.out.println("FINISHED");
+			for(Process p : release) {
+				mem.release(p);
+				System.out.println("Process " + p.getId() + " finished and was released");
+			}
+			mem.showResults(); //shows calculations and allocated proccess
+			sysTime++;
+		} 
+		System.out.println("\nFINISHED");
     }
 }
