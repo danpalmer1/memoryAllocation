@@ -26,7 +26,7 @@ public class Driver {
 			if(!alloc) { //if processes still need to be allocated
 				for(int i = 0; i < mem.procList.size(); i++) { //go through each process
 					Process p = mem.procList.get(i);
-					if(mem.first_fit(p, mem.procList.get(i).getSize()) > 0) {
+					if(mem.best_fit(p, mem.procList.get(i).getSize()) > 0) {
 						System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
 					} else System.err.println("Could not allocate");
 				}	
