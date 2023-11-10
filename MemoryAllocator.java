@@ -54,22 +54,6 @@ public class MemoryAllocator {
 		}
         return configMap;
     }
-
-      
-	// prints the allocation map (free + allocated) in ascending order of base addresses
-	public void print_status() {
-		order_partitions();
-		System.out.print("| ");
-
-		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
-			Process p = ent.getKey();
-			System.out.print("P" + p.getId() + " [" +
-			p.getTime() + "s] " + "(" + p.getSize()
-			+ " KB) | ");
-		
-		}
-		System.out.println("Free (" + free_memory() + " KB) |\n");
-	}
 	
 	// get the size of total allocated memory
 	private int allocated_memory() {
@@ -118,6 +102,35 @@ public class MemoryAllocator {
 		}
 		return alloc;
 	}
+
+	// implements the best fit memory allocation algorithm
+	public int best_fit(Process proc, int size) {
+		if(allocMap.containsKey(proc))
+			return -1; //illegal request as process has been allocated a partition already
+		int index = 0, alloc = -1; Partition candidatePart = null; int holeLeft = 99999999;
+		//iterate through partition list and find the partition nearest in size to select
+		for(Partition part : partList) {
+			if(part.isbFree() && part.getLength() >= size && part.getLength() - size <= holeLeft) { //found candidate partition
+				candidatePart = part;
+				holeLeft = part.getLength() - size;
+				alloc = size;
+			}
+		}
+		if(alloc != -1) { //valid partition found
+			Partition allocPart = new Partition(candidatePart.getBase(), size);
+			allocPart.setbFree(false);
+			allocPart.setProcess(proc);
+			partList.add(index, allocPart); //insert this allocated partition at index
+			allocMap.put(proc, allocPart);
+			candidatePart.setBase(candidatePart.getBase() + size);
+			candidatePart.setLength(candidatePart.getLength() - size);
+			if(candidatePart.getLength() == 0) //if the new free memory partition has 0 size -> remove it
+				partList.remove(candidatePart);
+			proc.setIsAlloc(true);
+		} 
+		return alloc;
+	}
+
 
 	//check that the currently allocated processes have time left
 	public boolean isFinished() {
@@ -186,10 +199,23 @@ public class MemoryAllocator {
 		return configMap;
 	}
 
+	// prints the allocation map (free + allocated) in ascending order of base addresses
+	public void print_status() {
+		order_partitions();
+		System.out.print("| ");
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			System.out.print("P" + p.getId() + " [" +
+			p.getTime() + "s] " + "(" + p.getSize()
+			+ " KB) | ");
+		
+		}
+		System.out.println("Free (" + free_memory() + " KB) |\n");
+	}
+
 	public void showResults() {
 		double num_holes = 0;
 		double sum_holes = 0;
-		
 		for(int i = 0; i < partList.size(); i++) {
 			if(!partList.get(i).isbFree()) {
 				num_holes++;
