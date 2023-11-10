@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class MemoryAllocator {
 		}
         return configMap;
     }
-	
+		
 	// get the size of total allocated memory
 	private int allocated_memory() {
 		int size = 0;
@@ -142,14 +143,7 @@ public class MemoryAllocator {
 			}
 		}
 		return true;
-	}
-
-	// implements the first fit memory allocation algorithm
-	// public int best_fit(Process proc, int size) {
-		
-	// 	return alloc;
-	// }
-  
+	}  
 	// release the allocated memory of a process
 	public int release(Process process) {
 		if(!allocMap.containsKey(process))
@@ -216,18 +210,33 @@ public class MemoryAllocator {
 	public void showResults() {
 		double num_holes = 0;
 		double sum_holes = 0;
+		order_partitions();
+		System.out.print("| ");
+
+		for(Map.Entry<Process, Partition> ent : allocMap.entrySet()) {
+			Process p = ent.getKey();
+			System.out.print("P" + p.getId() + " [" +
+			p.getTime() + "s] " + "(" + p.getSize()
+			+ " KB) | ");
+		
+		}
+		System.out.println("Free (" + free_memory() + " KB) |");
+
+		
 		for(int i = 0; i < partList.size(); i++) {
 			if(!partList.get(i).isbFree()) {
 				num_holes++;
 				sum_holes += partList.get(i).getLength();
 			}
 		}
+
+		DecimalFormat df = new DecimalFormat("#.####");
 		double avg_size = sum_holes/num_holes;
 		double percent = (num_holes/size) * 100;
 		
 		System.out.print("| Free Holes (" + num_holes + ") | " + "Avg Size (" +
 		avg_size + " KB) | " + "Total Size (" + sum_holes + " KB)"
-		+ " | Percent (" + percent + "%)");
+		+ " | Percent (" + df.format(percent) + "%) |");
 		
 	}
 }
