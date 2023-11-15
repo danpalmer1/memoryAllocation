@@ -24,18 +24,31 @@ public class MemoryAllocator {
 		this.partList = new ArrayList<>();
 		this.partList.add(new Partition(0, size)); //add the first hole, which is the whole memory at start up
 		//create NUM_PROC processes
-		for(int i = 0; i < configMap.get("NUM_PROC"); i++) {
-			Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"), i);
-			procList.add(proc);
-		}
+		// for(int i = 0; i < configMap.get("NUM_PROC"); i++) {
+		// 	Process proc = new Process(configMap.get("PROC_SIZE_MAX"), configMap.get("MAX_PROC_TIME"), i);
+		// 	procList.add(proc);
+		// }
+		Process proc0 = new Process(16, 42, 0);
+		Process proc1 = new Process(55, 12, 1);
+		Process proc2 = new Process(42, 10, 2);
+		Process proc3 = new Process(18, 52, 3);
+		Process proc4 = new Process(70, 71, 4);
+
+		procList.add(proc0);
+		procList.add(proc1);
+		procList.add(proc2);
+		procList.add(proc3);
+		procList.add(proc4);
+
+
 	}
       
 	private static Map<String, Integer> loadConfig() {
 		//put default values
-		configMap.put("MEMORY_MAX", 1024);
-		configMap.put("PROC_SIZE_MAX", 256);
-		configMap.put("NUM_PROC", 10);
-		configMap.put("MAX_PROC_TIME", 10000);
+		// configMap.put("MEMORY_MAX", 1024);
+		// configMap.put("PROC_SIZE_MAX", 256);
+		// configMap.put("NUM_PROC", 10);
+		// configMap.put("MAX_PROC_TIME", 10000);
 		try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {

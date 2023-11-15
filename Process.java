@@ -6,8 +6,8 @@ public class Process {
     private boolean isAlloc;
 
     public Process(int maxSize, int maxTime, int id) {
-        this.size = (int)(Math.random() * maxSize);
-        this.time = (int)(Math.random() * maxTime);
+        this.size = maxSize;
+        this.time = maxTime;
         this.id = id;
         this.isAlloc = false;
     }
