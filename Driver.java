@@ -10,7 +10,21 @@ public class Driver {
         // 	+ implement next-fit
 		//	+ make loop run until every process has reached 0 time
 		//	+ currently issue is once all processes are allocated (alloc = true) and all processes are finished (mem.isFinished() = true), we get an infinite loop
-    	MemoryAllocator mem = new MemoryAllocator();
+		Driver d = new Driver();
+		int f, b, w, n;
+		f = d.runAlgorithm("F");
+		b = d.runAlgorithm("B");
+		w = d.runAlgorithm("W");
+		n = d.runAlgorithm("N");
+		System.out.println("First-fit: " + f + "\n"
+			+ "Best-fit: " + b + "\n"
+			+ "Worst-fit: " + w + "\n"
+			+ "Next-fit: " + n + "\n");
+}
+
+
+public int runAlgorithm(String algo) {
+	MemoryAllocator mem = new MemoryAllocator();
 		boolean alloc = false; //init alloc to false because we need to allocate processes
 		int sysTime = 0;
 		while(!alloc || !mem.isFinished()) { //while processes to be allocated or processes are not finished 
@@ -26,9 +40,24 @@ public class Driver {
 			if(!alloc) { //if processes still need to be allocated
 				for(int i = 0; i < mem.procList.size(); i++) { //go through each process
 					Process p = mem.procList.get(i);
-					if(mem.next_fit(p, mem.procList.get(i).getSize()) > 0) {
-						System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
-					} else System.err.println("Could not allocate");
+					switch(algo) {
+						case "B": 
+							if(mem.best_fit(p, mem.procList.get(i).getSize()) > 0) {
+								System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+							} else System.err.println("Could not allocate");
+						case "W":
+							if(mem.worst_fit(p, mem.procList.get(i).getSize()) > 0) {
+								System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+							} else System.err.println("Could not allocate");
+						case "N":
+							if(mem.next_fit(p, mem.procList.get(i).getSize()) > 0) {
+								System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+							} else System.err.println("Could not allocate");
+						case "F":
+							if(mem.first_fit(p, mem.procList.get(i).getSize()) > 0) {
+								System.out.println("Successfully allocated " + mem.partList.get(i).getLength() + " KB to " + mem.procList.get(i).getId());
+							} else System.err.println("Could not allocate");
+					}
 				}	
     		}
 			List<Process> release = new ArrayList<Process>();
@@ -48,5 +77,6 @@ public class Driver {
 			sysTime++;
 		} 
 		System.out.println("\nFINISHED");
+		return sysTime;
     }
 }
