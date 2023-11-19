@@ -66,7 +66,7 @@ public class MemoryAllocator {
 	}
       
 	// get the size of total free memory
-	private int free_memory() {
+	int free_memory() {
 		int size = 0;
 		for(Partition part : partList)
 			if(part.isbFree()) size += part.getLength();
@@ -91,12 +91,12 @@ public class MemoryAllocator {
 				allocPart.setProcess(proc);
 				partList.add(index, allocPart); //insert this allocated partition at index
 				allocMap.put(proc, allocPart);
+				System.out.print("Successfully allocated " + partList.get(index).getLength());
 				part.setBase(part.getBase() + size);
 				part.setLength(part.getLength() - size);
 				if(part.getLength() == 0) //if the new free memory partition has 0 size -> remove it
 					partList.remove(part);
 				alloc = size;
-				//procList.remove(proc);
 				proc.setIsAlloc(true);
 				break;
 			}
@@ -121,6 +121,7 @@ public class MemoryAllocator {
 				allocPart.setbFree(false);
 				allocPart.setProcess(proc);
 				partList.add(index, allocPart); // Insert this allocated partition at index
+				System.out.print("Successfully allocated " + partList.get(index).getLength());
 				allocMap.put(proc, allocPart);
 				part.setBase(part.getBase() + size);
 				part.setLength(part.getLength() - size);
@@ -160,6 +161,7 @@ public class MemoryAllocator {
 			allocPart.setProcess(proc);
 			partList.add(index, allocPart); //insert this allocated partition at index
 			allocMap.put(proc, allocPart);
+			System.out.print("Successfully allocated " + partList.get(index).getLength());
 			candidatePart.setBase(candidatePart.getBase() + size);
 			candidatePart.setLength(candidatePart.getLength() - size);
 			if(candidatePart.getLength() == 0) //if the new free memory partition has 0 size -> remove it
@@ -188,6 +190,7 @@ public class MemoryAllocator {
 			allocPart.setProcess(proc);
 			partList.add(index, allocPart); //insert this allocated partition at index
 			allocMap.put(proc, allocPart);
+			System.out.print("Successfully allocated " + partList.get(index).getLength());
 			candidatePart.setBase(candidatePart.getBase() + size);
 			candidatePart.setLength(candidatePart.getLength() - size);
 			if(candidatePart.getLength() == 0) //if the new free memory partition has 0 size -> remove it
