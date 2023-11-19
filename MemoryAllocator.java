@@ -15,6 +15,7 @@ public class MemoryAllocator {
 	List<Partition> partList;    // list of memory partitions
     private static Map<String, Integer> configMap = new HashMap<>();
 	List<Process> procList = new ArrayList<Process>();
+    private int lastAllocatedIndex; // Start searching from the last allocated index
 
 	// constructor
 	public MemoryAllocator() {
@@ -116,7 +117,71 @@ public class MemoryAllocator {
 		}
 		return alloc;
 	}
+public int next_fit(Process proc, int size){
+		if (allocMap.containsKey(proc))
+        return -1; // Illegal request as the process has been allocated a partition already
 
+    int alloc = -1;
+    int index = lastAllocatedIndex; // Start searching from the last allocated index
+
+    do {
+        Partition part = partList.get(index);
+
+        if (part.isbFree() && part.getLength() >= size) {
+            // Found a satisfied free partition
+            Partition allocPart = new Partition(part.getBase(), size);
+            allocPart.setbFree(false);
+            allocPart.setProcess(proc);
+            partList.add(index, allocPart); // Insert this allocated partition at index
+            allocMap.put(proc, allocPart);
+            part.setBase(part.getBase() + size);
+            part.setLength(part.getLength() - size);
+
+            if (part.getLength() == 0) // If the new free memory partition has 0 size -> remove it
+                partList.remove(part);
+
+            alloc = size;
+            proc.setIsAlloc(true);
+            lastAllocatedIndex = index; // Update the last allocated index
+            break;
+        }
+
+        index = (index + 1) % partList.size(); // Move to the next partition in a circular manner
+
+    } while (index != lastAllocatedIndex); // Continue until we complete one full iteration
+
+    return alloc;
+
+
+
+	}
+	// implements the best fit memory allocation algorithm
+	public int best_fit(Process proc, int size) {
+		if(allocMap.containsKey(proc))
+			return -1; //illegal request as process has been allocated a partition already
+		int index = 0, alloc = -1; Partition candidatePart = null; int holeLeft = 99999999;
+		//iterate through partition list and find the partition nearest in size to select
+		for(Partition part : partList) {
+			if(part.isbFree() && part.getLength() >= size && part.getLength() - size <= holeLeft) { //found candidate partition
+				candidatePart = part;
+				holeLeft = part.getLength() - size;
+				alloc = size;
+			}
+		}
+		if(alloc != -1) { //valid partition found
+			Partition allocPart = new Partition(candidatePart.getBase(), size);
+			allocPart.setbFree(false);
+			allocPart.setProcess(proc);
+			partList.add(index, allocPart); //insert this allocated partition at index
+			allocMap.put(proc, allocPart);
+			candidatePart.setBase(candidatePart.getBase() + size);
+			candidatePart.setLength(candidatePart.getLength() - size);
+			if(candidatePart.getLength() == 0) //if the new free memory partition has 0 size -> remove it
+				partList.remove(candidatePart);
+			proc.setIsAlloc(true);
+		} 
+		return alloc;
+	}
 	//check that the currently allocated processes have time left
 	public boolean isFinished() {
 		//if(allocMap.size() < 2) return false;
