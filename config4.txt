@@ -1,0 +1,4 @@
+<MEMORY_MAX> = <750>
+<PROC_SIZE_MAX> = <256>
+<NUM_PROC> = <30>
+<MAX_PROC_TIME> = <25>

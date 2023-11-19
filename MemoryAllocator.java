@@ -18,8 +18,8 @@ public class MemoryAllocator {
 	private int lastAllocatedIndex = 0;
 
 	// constructor
-	public MemoryAllocator() {
-		loadConfig(); //load config info into configMap
+	public MemoryAllocator(String configFile) {
+		loadConfig(configFile); //load config info into configMap
 		size = configMap.get("MEMORY_MAX");
 		this.allocMap = new HashMap<>();
 		this.partList = new ArrayList<>();
@@ -31,13 +31,13 @@ public class MemoryAllocator {
 		}
 	}
       
-	private static Map<String, Integer> loadConfig() {
+	private static Map<String, Integer> loadConfig(String fileName) {
 		//put default values
 		configMap.put("MEMORY_MAX", 1024);
 		configMap.put("PROC_SIZE_MAX", 256);
 		configMap.put("NUM_PROC", 10);
 		configMap.put("MAX_PROC_TIME", 10000);
-		try (BufferedReader reader = new BufferedReader(new FileReader("config.txt"))) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // Split the line into key and value
